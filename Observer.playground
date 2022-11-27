@@ -1,0 +1,76 @@
+import Foundation
+
+protocol Observer: AnyObject {
+    func notify(scanner: BirdScanner)
+}
+
+class DucksEnthusiast: Observer {
+    func notify(scanner: BirdScanner) {
+        if scanner.observerdBird == "Duck" {
+            print("Duck enthusiast: That duck is amazing")
+        } else {
+            print("Duck enthusiast: That's nice but I prefer Ducks")
+        }
+    }
+}
+
+class StorksEnthusiast: Observer {
+    func notify(scanner: BirdScanner) {
+        if scanner.observerdBird == "Stork" {
+            print("Stork enthusiast: That's a cool Stork")
+        } else {
+            print("Stork enthusiast: That's nice but I prefer Storks")
+        }
+    }
+}
+
+class BirdScanner {
+    private var observers = [Observer]()
+    private(set) var observerdBird = ""
+    
+    func subscribe(_ observer: Observer) {
+        print("Hi there enthusiast, from now on you will receive bird related notifications")
+        observers.append(observer)
+    }
+    
+    func unsubscribe(_ observer: Observer) {
+        if let id = observers.firstIndex(where: { $0 === observer }) {
+            observers.remove(at: id)
+            print("Sorry to see you go \(observer.self). You know where to find me if you want more bird news")
+        }
+    }
+    
+    private func notify() {
+        print("Notifying Enthusiasts")
+        observers.forEach({ $0.notify(scanner: self)})
+    }
+    
+    func notifyAllObservers() {
+        notify()
+    }
+    
+    func scan(bird: String) {
+        self.observerdBird = bird
+    }
+}
+
+class BirdWatchingApp {
+    func test() {
+        let scanner = BirdScanner()
+        
+        let enthusiast1 = DucksEnthusiast()
+        let enthusiast2 = StorksEnthusiast()
+        
+        scanner.subscribe(enthusiast1)
+        scanner.subscribe(enthusiast2)
+        
+        scanner.scan(bird: "Duck")
+        scanner.notifyAllObservers()
+        scanner.scan(bird: "Stork")
+        scanner.notifyAllObservers()
+        scanner.unsubscribe(enthusiast2)
+    }
+}
+
+let app = BirdWatchingApp()
+app.test()
